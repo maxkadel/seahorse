@@ -24,7 +24,7 @@ jobs:
     docker:
       - image: cimg/ruby:3.0.3-node
       - environment:
-          POSTGRES_DB: opinionated_rails_test
+          POSTGRES_DB: seahorse_test
           POSTGRES_PASSWORD: ''
           POSTGRES_USER: circleci-demo-ruby
         image: cimg/postgres:14.1
