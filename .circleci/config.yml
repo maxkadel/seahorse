@@ -1,0 +1,110 @@
+version: 2.1
+orbs:
+  ruby: circleci/ruby@1.4.0
+  node: circleci/node@5.0.0
+jobs:
+  build:
+    docker:
+      - image: cimg/ruby:3.0.3-node
+    steps:
+      - checkout
+      - ruby/install-deps
+      - node/install-packages:
+          pkg-manager: yarn
+  checking:
+    docker:
+      - image: cimg/ruby:3.0.3-node
+    steps:
+      - checkout
+      - ruby/install-deps
+      - ruby/rubocop-check:
+          format: progress
+          label: Inspecting with Rubocop
+  test:
+    docker:
+      - image: cimg/ruby:3.0.3-node
+      - environment:
+          POSTGRES_DB: opinionated_rails_test
+          POSTGRES_PASSWORD: ''
+          POSTGRES_USER: circleci-demo-ruby
+        image: cimg/postgres:14.1
+    environment:
+      BUNDLE_JOBS: '3'
+      BUNDLE_RETRY: '3'
+      PGHOST: 127.0.0.1
+      PGPASSWORD: ''
+      PGUSER: circleci-demo-ruby
+      RAILS_ENV: test
+    parallelism: 3
+    steps:
+      - checkout
+      - ruby/install-deps
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          command: 'dockerize -wait tcp://localhost:5432 -timeout 1m'
+          name: Wait for DB
+      - run:
+          command: 'bundle exec rails db:schema:load --trace'
+          name: Database setup
+      - run:
+          command: yarn build
+          name: Build javascript assets
+      - run:
+          command: yarn build:css
+          name: Build css assets
+      - run:
+          name: Setup Code Climate test-reporter
+          command: |
+            # download test reporter as a static binary
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+            ./cc-test-reporter before-build
+      - run:
+          command: |
+            mkdir -p /tmp/test-results/rspec
+            TESTFILES=$(circleci tests glob spec/**/*_spec.rb | circleci tests split --split-by=timings)
+            bundle exec rspec $TESTFILES --profile 10 --format RspecJunitFormatter --out /tmp/test-results/rspec/results.xml --format progress
+          name: RSpec Tests
+      - run:
+          name: Format Code Climate Test Coverage
+          command: |
+            ./cc-test-reporter format-coverage -t simplecov -o "coverage/codeclimate.$CIRCLE_NODE_INDEX.json"
+      - persist_to_workspace:
+          root: coverage
+          paths:
+            - codeclimate.*.json
+      - store_test_results:
+          path: /tmp/test-results/rspec
+      - store_artifacts:
+          destination: test-results
+          path: /tmp/test-results/rspec
+
+  upload-coverage:
+    docker:
+      - image: cimg/ruby:3.0.3-node
+    steps:
+      - attach_workspace:
+          at: coverage
+      - run:
+          name: Install Code Climate Test Reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - run:
+          command: |
+            ./cc-test-reporter sum-coverage --output - coverage/codeclimate.*.json | ./cc-test-reporter upload-coverage --debug --input -
+
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+workflows:
+  build:
+    jobs:
+      - build
+      - checking
+      - test:
+          requires:
+            - build
+      - upload-coverage:
+          requires:
+            - test
