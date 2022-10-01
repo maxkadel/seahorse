@@ -8,19 +8,22 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/6625a1f6b3d8594fd003/test_coverage)](https://codeclimate.com/github/maxkadel/seahorse/test_coverage)
 
 ### Dependencies
-* Ruby 3.0.3
-* Rails 7.0.2
-* Bundler 2.2.32
+* Ruby 3.1.2
+* Rails 7.0.4
+* Bundler 2.3.22 
 * psql 14.2
 * npm 8.5.2
 * yarn 1.22.17
 
+### Development dependencies
+* Heroku CLI - see https://devcenter.heroku.com/articles/heroku-cli#install-the-heroku-cli
 ### Running in development
 
 #### First time setup
 * Clone the repository `git clone git@github.com:maxkadel/seahorse.git`
 * Go into application directory `cd seahorse`
 * Install gem bundle `bundle install`
+* Install yarn packages `yarn install`
 * Database creation - ensure you have a Postgres service running
   * `bundle exec rails db:create`
   * `bundle exec rails db:migrate`

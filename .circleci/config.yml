@@ -5,7 +5,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: cimg/ruby:3.0.3-node
+      - image: cimg/ruby:3.1.2-node
     steps:
       - checkout
       - ruby/install-deps
@@ -13,7 +13,7 @@ jobs:
           pkg-manager: yarn
   checking:
     docker:
-      - image: cimg/ruby:3.0.3-node
+      - image: cimg/ruby:3.1.2-node
     steps:
       - checkout
       - ruby/install-deps
@@ -22,7 +22,7 @@ jobs:
           label: Inspecting with Rubocop
   test:
     docker:
-      - image: cimg/ruby:3.0.3-node
+      - image: cimg/ruby:3.1.2-node
       - environment:
           POSTGRES_DB: seahorse_test
           POSTGRES_PASSWORD: ''
@@ -82,7 +82,7 @@ jobs:
 
   upload-coverage:
     docker:
-      - image: cimg/ruby:3.0.3-node
+      - image: cimg/ruby:3.1.2-node
     steps:
       - attach_workspace:
           at: coverage
