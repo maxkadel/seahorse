@@ -21,6 +21,7 @@
 * Clone the repository `git clone git@github.com:maxkadel/seahorse.git`
 * Go into application directory `cd seahorse`
 * Install gem bundle `bundle install`
+* Install yarn packages `yarn install`
 * Database creation - ensure you have a Postgres service running
   * `bundle exec rails db:create`
   * `bundle exec rails db:migrate`
