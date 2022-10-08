@@ -14,6 +14,9 @@ gem 'bootsnap', require: false
 # Bundle and process CSS [https://github.com/rails/cssbundling-rails]
 gem 'cssbundling-rails'
 
+# Authenticate users
+gem 'devise'
+
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
@@ -54,6 +57,7 @@ gem 'turbo-rails'
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 group :development, :test do
+  gem 'byebug', '~> 11.1'
   gem 'capybara'
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'debug', platforms: %i[mri mingw x64_mingw]
@@ -61,7 +65,9 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'rubocop-rails', require: false
   gem 'rubocop-rspec'
+  gem 'selenium-webdriver'
   gem 'simplecov'
+  gem 'webrick'
 end
 
 group :development do
