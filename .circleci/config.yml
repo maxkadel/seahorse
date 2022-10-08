@@ -8,8 +8,6 @@ jobs:
     docker:
       - image: cimg/ruby:3.1.2-browsers
     steps:
-      - browser-tools/install-chrome
-      - browser-tools/install-chromedriver
       - checkout
       - ruby/install-deps
       - node/install-packages:
@@ -40,6 +38,8 @@ jobs:
       RAILS_ENV: test
     parallelism: 3
     steps:
+      - browser-tools/install-chrome
+      - browser-tools/install-chromedriver
       - checkout
       - ruby/install-deps
       - node/install-packages:
