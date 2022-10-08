@@ -6,3 +6,6 @@ AllCops:
     - 'db/schema.rb'
     - 'vendor/**/*'
     - 'bin/bundle'
+Style/Documentation:
+  Exclude:
+    - 'db/migrate/*'
